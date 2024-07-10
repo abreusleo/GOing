@@ -19,11 +19,8 @@ func NewService(cfg config.Config) *Service {
 	}
 }
 
-// QueryUsers realiza consultas aos usuários usando goroutines e channels
 func (s *Service) QueryUsers(userIDs []int) []string {
-	// Channel para coletar os resultados
 	results := make(chan string)
-	// WaitGroup para esperar todas as goroutines terminarem
 	var wg sync.WaitGroup
 
 	for _, id := range userIDs {
@@ -31,13 +28,11 @@ func (s *Service) QueryUsers(userIDs []int) []string {
 		go s.executeQuery(id, results, &wg)
 	}
 
-	// Goroutine para fechar o channel após todas as consultas serem concluídas
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
 
-	// Coletar os resultados do channel
 	var output []string
 	for result := range results {
 		output = append(output, result)
